@@ -1,5 +1,5 @@
 {
-  "name": "openthermgateway",
+  "name": "@1st-setup/openthermgateway",
   "version": "0.0.1",
   "description": "Nodejs module for communicating with an OpenThermGateway",
   "main": "openthermgateway.js",
