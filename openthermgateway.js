@@ -689,7 +689,8 @@ class openthermGatway extends EventEmitter {
 
     /**
      * 
-     * @param {string} msg 
+     * @param {string} msg
+     * @returns {object}
      */
     decode(msg) {
         var result = {};
