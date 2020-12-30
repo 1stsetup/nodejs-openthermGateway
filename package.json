@@ -1,6 +1,6 @@
 {
   "name": "@1st-setup/openthermgateway",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Nodejs module for communicating with an OpenThermGateway",
   "main": "openthermgateway.js",
   "scripts": {
@@ -13,6 +13,14 @@
   "dependencies": {
     "serialport": "9.0.2"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/1stsetup/nodejs-openthermGateway.git"
+  },
+  "bugs": {
+    "url": "https://github.com/1stsetup/nodejs-openthermGateway/issues"
+  },
+  "homepage": "https://github.com/1stsetup/nodejs-openthermGateway#readme",
   "author": "M. Verbraak",
   "license": "ISC"
 }
