@@ -446,6 +446,7 @@ class openthermGatway extends EventEmitter {
         super();
 
         var self = this;
+        this._data = {};
         this._serialOptions = serialOptions;
         if (!this._serialOptions) {
             this._serialOptions = {};
@@ -473,6 +474,14 @@ class openthermGatway extends EventEmitter {
                 self.connected = true;
             }
         })
+    }
+
+    get data() {
+        let result = {};
+        for(var property in this._data) {
+            result[property] = this._data[property];
+        }
+        return result;
     }
 
     get initialized() {
@@ -665,6 +674,16 @@ class openthermGatway extends EventEmitter {
             return;
         }
 
+        if (!OTGW_COMMANDS[command].check(value)) {
+            this.emit("error", {
+                toString: function() { return `Error value format for command '${command}=${value}'.`}
+            });
+            if (cb) {
+                cb(`Error value format for command '${command}=${value}'.`)
+            }
+            return;
+        }
+
         var self = this;
         this._port.write(data+"\r\n", (err, bytesWritten) => {
             if (err) {
@@ -726,47 +745,47 @@ class openthermGatway extends EventEmitter {
             result.idStr = OPENTHERM_IDS[result.id]
         }
         else {
-            result.idStr = "UNKNOWN";
+            result.idStr = "UNKNOWN-ID-"+result.id;
         }
 
         switch (result.id) {
             case OTGW_ID_STATUS: // Status bits
-                result.status = {};
+                result.Status = {};
 
-                result.status.FaultIndication = (val2 & 0x01) == 0x01;
-                result.status.CentralHeatingMode = (val2 & 0x02) == 0x02;
-                result.status.DomesticHotWaterMode = (val2 & 0x04) == 0x04;
-                result.status.FlameStatus = (val2 & 0x08) == 0x08;
-                result.status.CoolingStatus = (val2 & 0x10) == 0x10;
-                result.status["CH2-Enable"] = (val2 & 0x20) == 0x20;
-                result.status.DiagnosticsIndication = (val2 & 0x40) == 0x40;
-                result.status.Unknown1 = (val2 & 0x80) == 0x80;
+                result.Status.FaultIndication = (val2 & 0x01) == 0x01;
+                result.Status.CentralHeatingMode = (val2 & 0x02) == 0x02;
+                result.Status.DomesticHotWaterMode = (val2 & 0x04) == 0x04;
+                result.Status.FlameStatus = (val2 & 0x08) == 0x08;
+                result.Status.CoolingStatus = (val2 & 0x10) == 0x10;
+                result.Status["CH2-Enable"] = (val2 & 0x20) == 0x20;
+                result.Status.DiagnosticsIndication = (val2 & 0x40) == 0x40;
+                result.Status.Unknown1 = (val2 & 0x80) == 0x80;
 
-                result.status.CentralHeatingEnable = (val1 & 0x01) == 0x01;
-                result.status.DomesticHotwaterEnable = (val1 & 0x02) == 0x02;
-                result.status.CoolingEnable = (val1 & 0x04) == 0x04;
-                result.status["OTC-Active"] = (val1 & 0x08) == 0x08;
-                result.status["CH2-Enable"] = (val1 & 0x10) == 0x10;
-                result.status.SummerWinterMode = (val1 & 0x20) == 0x20;
-                result.status.Unknown2 = (val1 & 0x40) == 0x40;
-                result.status.Unknown3 = (val1 & 0x80) == 0x80;
+                result.Status.CentralHeatingEnable = (val1 & 0x01) == 0x01;
+                result.Status.DomesticHotwaterEnable = (val1 & 0x02) == 0x02;
+                result.Status.CoolingEnable = (val1 & 0x04) == 0x04;
+                result.Status["OTC-Active"] = (val1 & 0x08) == 0x08;
+                result.Status["CH2-Enable"] = (val1 & 0x10) == 0x10;
+                result.Status.SummerWinterMode = (val1 & 0x20) == 0x20;
+                result.Status.Unknown2 = (val1 & 0x40) == 0x40;
+                result.Status.Unknown3 = (val1 & 0x80) == 0x80;
 
-                result.statusStr = {};
+                result.StatusStr = {};
 
-                result.statusStr.FaultIndication = result.status.FaultIndication ? "Fault" : "No fault";
-                result.statusStr.CentralHeatingMode = result.status.CentralHeatingMode ? "Active" : "Not active";
-                result.statusStr.DomesticHotWaterMode = result.status.DomesticHotWaterMode ? "Active" : "Not active";
-                result.statusStr.FlameStatus = result.status.FlameStatus ? "Flame on" : "Flame off";
-                result.statusStr.CoolingStatus = result.status.CoolingStatus ? "Active" : "Not active";
-                result.statusStr["CH2-Enable"] = result.status["CH2-Enable"] ? "Enabled" : "Disabled";
-                result.statusStr.DiagnosticsIndication = result.status.DiagnosticsIndication ? "Diagnostic event" : "No diagnostics";
+                result.StatusStr.FaultIndication = result.status.FaultIndication ? "Fault" : "No fault";
+                result.StatusStr.CentralHeatingMode = result.status.CentralHeatingMode ? "Active" : "Not active";
+                result.StatusStr.DomesticHotWaterMode = result.status.DomesticHotWaterMode ? "Active" : "Not active";
+                result.StatusStr.FlameStatus = result.status.FlameStatus ? "Flame on" : "Flame off";
+                result.StatusStr.CoolingStatus = result.status.CoolingStatus ? "Active" : "Not active";
+                result.StatusStr["CH2-Enable"] = result.status["CH2-Enable"] ? "Enabled" : "Disabled";
+                result.StatusStr.DiagnosticsIndication = result.status.DiagnosticsIndication ? "Diagnostic event" : "No diagnostics";
 
-                result.statusStr.CentralHeatingEnable = result.status.CentralHeatingEnable ? "Enabled" : "Disabled";
-                result.statusStr.DomesticHotwaterEnable = result.status.DomesticHotwaterEnable ? "Enabled" : "Disabled";
-                result.statusStr.CoolingEnable = result.status.CoolingEnable ? "Enabled" : "Disabled";
-                result.statusStr["OTC-Active"] = result.status["OTC-Active"] ? "Active" : "Not active";
-                result.statusStr["CH2-Enable"] = result.status["CH2-Enable"] ? "Enabled" : "Disabled";
-                result.statusStr.SummerWinterMode = result.status.SummerWinterMode ? "Summer" : "Winter";
+                result.StatusStr.CentralHeatingEnable = result.status.CentralHeatingEnable ? "Enabled" : "Disabled";
+                result.StatusStr.DomesticHotwaterEnable = result.status.DomesticHotwaterEnable ? "Enabled" : "Disabled";
+                result.StatusStr.CoolingEnable = result.status.CoolingEnable ? "Enabled" : "Disabled";
+                result.StatusStr["OTC-Active"] = result.status["OTC-Active"] ? "Active" : "Not active";
+                result.StatusStr["CH2-Enable"] = result.status["CH2-Enable"] ? "Enabled" : "Disabled";
+                result.StatusStr.SummerWinterMode = result.status.SummerWinterMode ? "Summer" : "Winter";
                 break;
             case OTGW_ID_CONTROLSETPOINT:
             case OTGW_ID_COOLINGCONTROLSIGNAL:
@@ -808,41 +827,52 @@ class openthermGatway extends EventEmitter {
             case OTGW_ID_HOURSPUMPDHW:
             case OTGW_ID_MASTEROPENTHERMVERSION:
             case OTGW_ID_SLAVEOPENTHERMVERSION:
-                result[OPENTHERM_IDS[result.id]] = toFloat(val1, val2);
+                result[result.idStr] = toFloat(val1, val2);
                 break;
             case OTGW_ID_MASTERMEMBERID:
             case OTGW_ID_SLAVEMEMBERID:
             case OTGW_ID_FAULTCODE:
             case OTGW_ID_TSPNUMBER:
             case OTGW_ID_FHBSIZE:
-                result[OPENTHERM_IDS[result.id]] = val1;
+                result[result.idStr] = val1;
                 break;
             case OTGW_ID_TSPINDEXANDTSPVALUE:
             case OTGW_ID_FHBINDEXANDFHBVALUE:
-                result[OPENTHERM_IDS[result.id]] = {
+                result[result.idStr] = {
                     index: val1,
                     value: val2
                 };
                 break;
             case OTGW_ID_BOILERCAPACITYANDMODULATIONLIMITS:
-                result[OPENTHERM_IDS[result.id]] = {
+                result[result.idStr] = {
                     capacity: val1,
                     modulationlimit: val2
                 };
                 break;
             case OTGW_ID_MASTERPRODUCTTYPEANDVERSION:
             case OTGW_ID_SLAVEPRODUCTTYPEANDVERSION:
-                result[OPENTHERM_IDS[result.id]] = {
+                result[result.idStr] = {
                     productiontype: val1,
                     version: val2
                 };
                 break;
             default:
-                result["UNKNOWN"] = {
+                result[result.idStr] = {
                     val1: val1,
-                    val2: val2
+                    val2: val2,
+                    float: toFloat(val1, val2)
                 }
+                break;
         }
+
+        if (!this._data[result.status]) {
+            this._data[result.status] = {};
+        }
+        this._data[result.status][result.idStr] = result[result.idStr];
+        if (result.id == OTGW_ID_STATUS) {
+            this._data[result.status].StatusStr = result.StatusStr;
+        }
+
         return result;
     }
 }
