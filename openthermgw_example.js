@@ -31,3 +31,7 @@ myOTGW.on("connected",() => {
 myOTGW.on("otgwData",(data) => {
     console.log("otgw >> "+JSON.stringify(data,null,"\t"));
 })
+
+myOTGW.on("printSummary",(data) => {
+    console.log("printSummary >> "+JSON.stringify(data,null,"\t"));
+})
