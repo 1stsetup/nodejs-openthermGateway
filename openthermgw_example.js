@@ -10,7 +10,7 @@ myOTGW.on("exception", (err) => {
 });
 
 myOTGW.on("inError", (err) => {
-    console.error(err).toString();
+    console.error(err.toString());
 });
 
 myOTGW.on("otgwError", (err) => {
@@ -19,6 +19,9 @@ myOTGW.on("otgwError", (err) => {
 
 myOTGW.on("initialized",() => {
     console.log("Initialized");
+    myOTGW.sendCommand("PS=1",(err, response) => {
+
+    });
 })
 
 myOTGW.on("connected",() => {

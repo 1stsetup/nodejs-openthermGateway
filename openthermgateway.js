@@ -431,6 +431,33 @@ const OTGW_RESPONSE_ERRORS = {
     "OE": "Overrun Error."
 }
 
+const PRINT_SUMMARY_FIELDS = [
+    "Status",
+    "Control setpoint",
+    "Remote parameter flags",
+    "Maximum relative modulation level",
+    "Boiler capacity and modulation limits",
+    "Room setpoint",
+    "Relative modulation level",
+    "CH water pressure",
+    "Room temperature",
+    "Boiler water temperature",
+    "DHW temperature",
+    "Outside temperature",
+    "Return water temperature",
+    "DHW setpoint boundaries",
+    "Max CH setpoint boundaries",
+    "DHW setpoint",
+    "Max CH water setpoint",
+    "Burner starts",
+    "CH pump starts",
+    "DHW pump/valve starts",
+    "DHW burner starts",
+    "Burner operation hours",
+    "CH pump operation hours",
+    "DHW pump/valve operation hours",
+    "DHW burner operation hours"
+]
 /**
  * 
  * @param {number} val1 
@@ -464,6 +491,7 @@ class openthermGatway extends EventEmitter {
         this._serialOptions.autoOpen = false;
         this._serialDevice = serialDevice;
         this._options = otgwOptions;
+        this._ps = 0;
         this._port = new SerialPort(this._serialDevice, this._serialOptions);
         this._parser = this._port.pipe(new Readline({ delimiter: '\r\n' }));
         this._parser.on('data', (data) => {
@@ -606,6 +634,10 @@ class openthermGatway extends EventEmitter {
             }
             else {
                 // We received an answer and it should be the same value as in the command send.
+                if (command == "PS") {
+                    // Print Summary.
+                    this._ps = value;
+                }
                 if (this._queue[counter].cb) {
                     this._queue[counter].cb(value != this._queue[counter].value, value);
                 }
@@ -615,6 +647,27 @@ class openthermGatway extends EventEmitter {
             this._queue.splice(counter, 1);
         }
         else {
+            if (this._ps == 1) {
+                // We do not get intermediate updates only when the PS=1 command is given
+                let splitData = _data.split(",");
+                if (splitData.length == PRINT_SUMMARY_FIELDS.length) {
+                    let printSummary = {};
+                    for(var idx in PRINT_SUMMARY_FIELDS) {
+                        printSummary[PRINT_SUMMARY_FIELDS[idx]] = splitData[idx];
+                    }
+                    this.emit("otgwData", {
+                        raw: _data,
+                        printSummary: printSummary
+                    });
+                }
+                else {
+                    // Wrong data from otgw
+                    this.emit("inError", {
+                        toString: function() { return `Received data '${_data}' from otgw has wrong number of fields. Expected '${PRINT_SUMMARY_FIELDS.length}' got '${splitData.length}.`}
+                    });
+                }
+                return;
+            }
             if (_data.length != 9) {
                 if (_data.length == 2 && OTGW_RESPONSE_ERRORS[_data]) {
                     this.emit("otgwError", {
