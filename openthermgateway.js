@@ -597,7 +597,7 @@ class openthermGatway extends EventEmitter {
             else {
                 // We received an answer and it should be the same value as in the command send.
                 if (this._queue[counter].cb) {
-                    this._queue[counter](value != this._queue[counter].value, value);
+                    this._queue[counter].cb(value != this._queue[counter].value, value);
                 }
             }
 
