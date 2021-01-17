@@ -581,7 +581,7 @@ class openthermGatway extends EventEmitter {
             if (!found) {
                 // We received a response to a command which is no longer in the queue!?
                 this.emit("exception", {
-                    toString: () => { return `Got response to command which is not in the send queue.!?`}
+                    toString: () => { return `Got response to command '${command}' which is not in the send queue.!?`}
                 })
                 return;
             }
@@ -608,7 +608,7 @@ class openthermGatway extends EventEmitter {
             if (_data.length != 9) {
                 // Wrong data from otgw
                 this.emit("inError", {
-                    toString: function() { return `Received data from otgw has wrong length. Expected '9' got '${_data.length}.`}
+                    toString: function() { return `Received data '${_data}' from otgw has wrong length. Expected '9' got '${_data.length}.`}
                 });
                 return;
             }
@@ -651,20 +651,20 @@ class openthermGatway extends EventEmitter {
 
         if (_data.length <4) {
             this.emit("error", {
-                toString: function() { return `Error not a valid command. Not enough characters.`}
+                toString: function() { return `Error not a valid command '${_data}'. Not enough characters.`}
             });
             if (cb) {
-                cb(`Error not a valid command. Not enough characters.`)
+                cb(`Error not a valid command '${_data}'. Not enough characters.`)
             }
             return;
         }
 
         if (_data[2] != "=") {
             this.emit("error", {
-                toString: function() { return `Error not a valid command. Wrong separator. Expected '=' got '${_data[2]}'.`}
+                toString: function() { return `Error not a valid command '${_data}'. Wrong separator. Expected '=' got '${_data[2]}'.`}
             });
             if (cb) {
-                cb(`Error not a valid command. Wrong separator. Expected '=' got '${_data[2]}'.`)
+                cb(`Error not a valid command '${_data}'. Wrong separator. Expected '=' got '${_data[2]}'.`)
             }
             return;
         }
@@ -727,7 +727,7 @@ class openthermGatway extends EventEmitter {
         let mparts = msg.match(/(?<status>[RBTA])(?<msgtype>..)(?<id>..)(?<val1>..)(?<val2>..)/);
         if (!mparts) {
             this.emit("error", {
-                toString: () => {return `Error decoding OTGW message. Status is not 'R', 'B', 'T' or 'A'.`}
+                toString: () => {return `Error decoding OTGW message '${msg}'. Status is not 'R', 'B', 'T' or 'A'.`}
             })
             return;
         }
