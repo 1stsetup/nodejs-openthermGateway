@@ -431,6 +431,13 @@ const OTGW_RESPONSE_ERRORS = {
     "OE": "Overrun Error."
 }
 
+const OTGW_ERRORS = {
+    "Error 01": "Level changes happen too rapidly (disabled by default)",
+    "Error 02": "The stop bit was 0 while it should be 1",
+    "Error 03": "A bit was not received when it was expected",
+    "Error 04": "A parity error was detected on a received opentherm message"
+}
+
 const PRINT_SUMMARY_FIELDS = [
     "Status",
     "Control setpoint",
@@ -601,6 +608,14 @@ class openthermGatway extends EventEmitter {
 
         if (this._debug) console.log("openthermGateway.onParserData:"+_data);
 
+        if (OTGW_ERRORS.hasOwnProperty(_data)) {
+            this.emit("otgwError", {
+                raw: _data,
+                error: OTGW_ERRORS[_data]
+            });
+            return;
+        }
+
         if (_data.indexOf(": ") > -1) {
             // Response to command
             if (_data.length < 4) {
@@ -627,7 +642,7 @@ class openthermGatway extends EventEmitter {
             if (command == "GW") {
                 this._mode = (value == "1") ? "Gateway" : "Monitor";
             }
-            
+
             if (value.indexOf("=") > -1) {
                 // We received an answer to a request for data
                 let request = value.substr(0, value.indexOf("="));
@@ -680,7 +695,8 @@ class openthermGatway extends EventEmitter {
             if (_data.length != 9) {
                 if (_data.length == 2 && OTGW_RESPONSE_ERRORS[_data]) {
                     this.emit("otgwError", {
-                        toString: function() { return `Received error from otgw '${_data}'='${OTGW_RESPONSE_ERRORS[_data]}'.`}
+                        raw: _data,
+                        error: OTGW_RESPONSE_ERRORS[_data]
                     });
                 }
                 else {

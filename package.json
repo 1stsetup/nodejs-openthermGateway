@@ -1,6 +1,6 @@
 {
   "name": "@1st-setup/openthermgateway",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "description": "Nodejs module for communicating with an OpenThermGateway",
   "main": "openthermgateway.js",
   "scripts": {

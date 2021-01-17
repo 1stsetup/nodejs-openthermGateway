@@ -1,4 +1,4 @@
-This is a NodeJS modules to be able to connect to an OpenthermGateway [(OTGW)](http://otgw.tclcode.com/index.html).
+This is a NodeJS modules to be able to connect to an Opentherm Gateway [(OTGW)](http://otgw.tclcode.com/index.html).
 
 How to use: See openthermgw_example.js
 
@@ -18,19 +18,26 @@ const openthermGatway = require('@1st-setup/openthermgateway');
 
 var myOTGW = new openthermGatway("/dev/ttyUSB0",null, {debug:true});
 myOTGW.on("error", (err) => {
-    console.error(err);
+    console.error(err.toString());
 });
 
 myOTGW.on("exception", (err) => {
-    console.error(err);
+    console.error(err.toString());
 });
 
 myOTGW.on("inError", (err) => {
-    console.error(err);
+    console.error(err.toString());
+});
+
+myOTGW.on("otgwError", (err) => {
+    console.error(JSON.stringify(err,null,"\t"));
 });
 
 myOTGW.on("initialized",() => {
     console.log("Initialized");
+    myOTGW.sendCommand("PS=0",(err, response) => {
+
+    });
 })
 
 myOTGW.on("connected",() => {
@@ -39,6 +46,11 @@ myOTGW.on("connected",() => {
 
 myOTGW.on("otgwData",(data) => {
     console.log("otgw >> "+JSON.stringify(data,null,"\t"));
+    console.log("otgw.data >> "+JSON.stringify(myOTGW.data,null,"\t"));
+})
+
+myOTGW.on("printSummary",(data) => {
+    console.log("printSummary >> "+JSON.stringify(data,null,"\t"));
 })
 ```
 
@@ -64,7 +76,7 @@ Class **openthermGatway**
 -------------------------
 **Methods:**
 
-_Constructor(serialDevice, serialOptions, otgwOptions)_
+**_Constructor(serialDevice, serialOptions, otgwOptions)_**
 
 Called when you use new to create a new openthermGateway object
 
@@ -75,7 +87,7 @@ Input:
 
     * debug: Boolean. When 'true' all incoming and outgoing trafic on serial interface will be logged to console.
 
-_sendCommand(data, cb)_
+**_sendCommand(data, cb)_**
 
 With this method you can send a command to the OTGW
 
@@ -86,7 +98,7 @@ Input:
     * err: Object containing the error encountered.
     * response: The response from the OTGW on the send command.
 
-_decode(data)_
+**_decode(data)_**
 
 With this method you can decode data, messages, received from the OTGW.
 
@@ -109,7 +121,8 @@ Output:
     * idStr: String with explanation of id. When id is not known this will be set to "UNKNOWN".
     * val1: Hex code for value part 1.
     * val2: Hex code for value part 2.
-    * status: Object. Only when id == "00" (OTGW_ID_STATUS). Each bit in val1 and val2 tells the status of different opentherm status fields. The properties in this object have the name of the field and the boolean value for the bit. True for set (1) and false when not set (0).
+    * Status: Object. Only when id == "00" (OTGW_ID_STATUS). Each bit in val1 and val2 tells the status of different opentherm status fields. The properties in this object have the name of the field and the boolean value for the bit. True for set (1) and false when not set (0).
+    * StatusStr: Object. Human readable version of Status object.
     * &lt;idStr&gt;: Depending on the id this is a Number (float), Number (integer), String ("&lt;val1&gt; &lt;val2&gt;")
 
 **Events:**
@@ -121,3 +134,6 @@ Following event are emitted by the class:
 * connected: When succesfully connected to OTGW.
 * initialized: When succesfully communicated with the OTGW and received the response to following commands: PR=A (Get about), PR=M (Get mode)) and PR=W (Get if domestic hot water is enabled).
 * inError: When a message is received from OTGW but we cannot decode it.
+* otgwData: When data is received and decoded from OTGW.
+* otgwError: When the OTGW reported and error. This happens when a wrong command was given, a wrong formatted command value was specified or something in the opentherm communication for the gateway went wrong.
+* printSummary: When the Print Summary mode command "PS=1" is send this event will follow it. 

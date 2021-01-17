@@ -14,7 +14,7 @@ myOTGW.on("inError", (err) => {
 });
 
 myOTGW.on("otgwError", (err) => {
-    console.error(err.toString());
+    console.error(JSON.stringify(err,null,"\t"));
 });
 
 myOTGW.on("initialized",() => {
