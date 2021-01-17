@@ -615,6 +615,7 @@ class openthermGatway extends EventEmitter {
     }
 
     /**
+     * Will send the specified command to the OTGW
      * 
      * @param {string | buffer} data 
      * @param {(error: boolean, response: string) => void} cb 
@@ -707,6 +708,7 @@ class openthermGatway extends EventEmitter {
     }
 
     /**
+     * Will decode and check a message received from the OTGW
      * 
      * @param {string} msg
      * @returns {object}
@@ -874,6 +876,12 @@ class openthermGatway extends EventEmitter {
         }
 
         return result;
+    }
+
+    close(cb) {
+        if (this.connected) {
+            this._port.close(cb);
+        }
     }
 }
 
