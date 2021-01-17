@@ -652,9 +652,9 @@ class openthermGatway extends EventEmitter {
                 let splitData = _data.split(",");
                 if (splitData.length == PRINT_SUMMARY_FIELDS.length) {
                     let printSummary = {};
-                    for(var idx in PRINT_SUMMARY_FIELDS) {
-                        printSummary[PRINT_SUMMARY_FIELDS[idx]] = splitData[idx];
-                    }
+                    PRINT_SUMMARY_FIELDS.forEach((value, idx) => {
+                        printSummary[value] = splitData[idx];
+                    })
                     this.emit("printSummary", {
                         raw: _data,
                         printSummary: printSummary
