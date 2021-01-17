@@ -624,6 +624,10 @@ class openthermGatway extends EventEmitter {
                 return;
             }
 
+            if (command == "GW") {
+                this._mode = (value == "1") ? "Gateway" : "Monitor";
+            }
+            
             if (value.indexOf("=") > -1) {
                 // We received an answer to a request for data
                 let request = value.substr(0, value.indexOf("="));
