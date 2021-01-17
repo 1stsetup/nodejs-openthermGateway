@@ -878,7 +878,7 @@ class openthermGatway extends EventEmitter {
 
         switch (result.id) {
             case OTGW_ID_STATUS: // Status bits
-                result = decodeStatus(val1, val2);
+                result = this.decodeStatus(val1, val2);
                 // result.Status = {};
 
                 // result.Status.FaultIndication = (val2 & 0x01) == 0x01;
