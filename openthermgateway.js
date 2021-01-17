@@ -878,43 +878,9 @@ class openthermGatway extends EventEmitter {
 
         switch (result.id) {
             case OTGW_ID_STATUS: // Status bits
-                result = this.decodeStatus(val1, val2);
-                // result.Status = {};
-
-                // result.Status.FaultIndication = (val2 & 0x01) == 0x01;
-                // result.Status.CentralHeatingMode = (val2 & 0x02) == 0x02;
-                // result.Status.DomesticHotWaterMode = (val2 & 0x04) == 0x04;
-                // result.Status.FlameStatus = (val2 & 0x08) == 0x08;
-                // result.Status.CoolingStatus = (val2 & 0x10) == 0x10;
-                // result.Status["CH2-Enable"] = (val2 & 0x20) == 0x20;
-                // result.Status.DiagnosticsIndication = (val2 & 0x40) == 0x40;
-                // result.Status.Unknown1 = (val2 & 0x80) == 0x80;
-
-                // result.Status.CentralHeatingEnable = (val1 & 0x01) == 0x01;
-                // result.Status.DomesticHotwaterEnable = (val1 & 0x02) == 0x02;
-                // result.Status.CoolingEnable = (val1 & 0x04) == 0x04;
-                // result.Status["OTC-Active"] = (val1 & 0x08) == 0x08;
-                // result.Status["CH2-Enable"] = (val1 & 0x10) == 0x10;
-                // result.Status.SummerWinterMode = (val1 & 0x20) == 0x20;
-                // result.Status.Unknown2 = (val1 & 0x40) == 0x40;
-                // result.Status.Unknown3 = (val1 & 0x80) == 0x80;
-
-                // result.StatusStr = {};
-
-                // result.StatusStr.FaultIndication = result.Status.FaultIndication ? "Fault" : "No fault";
-                // result.StatusStr.CentralHeatingMode = result.Status.CentralHeatingMode ? "Active" : "Not active";
-                // result.StatusStr.DomesticHotWaterMode = result.Status.DomesticHotWaterMode ? "Active" : "Not active";
-                // result.StatusStr.FlameStatus = result.Status.FlameStatus ? "Flame on" : "Flame off";
-                // result.StatusStr.CoolingStatus = result.Status.CoolingStatus ? "Active" : "Not active";
-                // result.StatusStr["CH2-Enable"] = result.Status["CH2-Enable"] ? "Enabled" : "Disabled";
-                // result.StatusStr.DiagnosticsIndication = result.Status.DiagnosticsIndication ? "Diagnostic event" : "No diagnostics";
-
-                // result.StatusStr.CentralHeatingEnable = result.Status.CentralHeatingEnable ? "Enabled" : "Disabled";
-                // result.StatusStr.DomesticHotwaterEnable = result.Status.DomesticHotwaterEnable ? "Enabled" : "Disabled";
-                // result.StatusStr.CoolingEnable = result.Status.CoolingEnable ? "Enabled" : "Disabled";
-                // result.StatusStr["OTC-Active"] = result.Status["OTC-Active"] ? "Active" : "Not active";
-                // result.StatusStr["CH2-Enable"] = result.Status["CH2-Enable"] ? "Enabled" : "Disabled";
-                // result.StatusStr.SummerWinterMode = result.Status.SummerWinterMode ? "Summer" : "Winter";
+                let decodedStatus = this.decodeStatus(val1, val2);
+                result.Status = decodedStatus.Status;
+                result.StatusStr = decodedStatus.StatusStr;
                 break;
             case OTGW_ID_CONTROLSETPOINT:
             case OTGW_ID_COOLINGCONTROLSIGNAL:

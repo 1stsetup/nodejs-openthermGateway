@@ -19,7 +19,7 @@ myOTGW.on("otgwError", (err) => {
 
 myOTGW.on("initialized",() => {
     console.log("Initialized");
-    myOTGW.sendCommand("PS=1",(err, response) => {
+    myOTGW.sendCommand("PS=0",(err, response) => {
 
     });
 })
@@ -30,6 +30,7 @@ myOTGW.on("connected",() => {
 
 myOTGW.on("otgwData",(data) => {
     console.log("otgw >> "+JSON.stringify(data,null,"\t"));
+    console.log("otgw.data >> "+JSON.stringify(myOTGW.data,null,"\t"));
 })
 
 myOTGW.on("printSummary",(data) => {
