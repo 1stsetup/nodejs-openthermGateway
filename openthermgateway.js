@@ -476,6 +476,14 @@ class openthermGatway extends EventEmitter {
         })
     }
 
+    get mode() {
+        return this._mode;
+    }
+
+    get about() {
+        return this._about;
+    }
+    
     get data() {
         let result = {};
         for(var property in this._data) {
