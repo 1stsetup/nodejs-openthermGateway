@@ -421,6 +421,16 @@ const OPENTHERM_IDS = {
     "7F": "SlaveProductTypeAndVersion"
 }
 
+const OTGW_RESPONSE_ERRORS = {
+    "NG": "No Good", 
+    "SE": "Syntax Error", 
+    "BV": "Bad Value", 
+    "OR": "Out of Range", 
+    "NS": "No Space", 
+    "NF": "Not Found", 
+    "OE": "Overrun Error."
+}
+
 /**
  * 
  * @param {number} val1 
@@ -606,10 +616,17 @@ class openthermGatway extends EventEmitter {
         }
         else {
             if (_data.length != 9) {
-                // Wrong data from otgw
-                this.emit("inError", {
-                    toString: function() { return `Received data '${_data}' from otgw has wrong length. Expected '9' got '${_data.length}.`}
-                });
+                if (_data.length == 2 && OTGW_RESPONSE_ERRORS[_data]) {
+                    this.emit("otgwError", {
+                        toString: function() { return `Received error from otgw '${_data}'='${OTGW_RESPONSE_ERRORS[_data]}'.`}
+                    });
+                }
+                else {
+                    // Wrong data from otgw
+                    this.emit("inError", {
+                        toString: function() { return `Received data '${_data}' from otgw has wrong length. Expected '9' got '${_data.length}.`}
+                    });
+                }
                 return;
             }
 
