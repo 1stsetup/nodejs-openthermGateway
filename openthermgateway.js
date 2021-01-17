@@ -654,10 +654,12 @@ class openthermGatway extends EventEmitter {
                     let printSummary = {};
                     PRINT_SUMMARY_FIELDS.forEach((value, idx) => {
                         printSummary[value] = splitData[idx];
+                        if (value == "Status") {
+                            let status = printSummary["Status"].split("/");
+                            printSummary.StatusDecoded = this.decodeStatus(status[0], status[1]);
+                        }
                     })
 
-                    let status = printSummary["Status"].split("/");
-                    printSummary.decodedStatus = this.decodeStatus(status[0], status[1]);
                     this.emit("printSummary", {
                         raw: _data,
                         printSummary: printSummary
@@ -789,7 +791,7 @@ class openthermGatway extends EventEmitter {
     }
 
     decodeStatus(val1, val2) {
-        status = {};
+        let status = {};
 
         status.FaultIndication = (val2 & 0x01) == 0x01;
         status.CentralHeatingMode = (val2 & 0x02) == 0x02;
@@ -809,7 +811,7 @@ class openthermGatway extends EventEmitter {
         status.Unknown2 = (val1 & 0x40) == 0x40;
         status.Unknown3 = (val1 & 0x80) == 0x80;
 
-        statusStr = {};
+        let statusStr = {};
 
         statusStr.FaultIndication = status.FaultIndication ? "Fault" : "No fault";
         statusStr.CentralHeatingMode = status.CentralHeatingMode ? "Active" : "Not active";
